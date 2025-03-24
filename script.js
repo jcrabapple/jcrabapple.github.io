@@ -1,8 +1,8 @@
 // DOM elements
-const usernameInput = document.getElementById('username-input');
-const loadButton = document.getElementById('load-button');
 const errorMessage = document.getElementById('error-message');
 const repoContainer = document.getElementById('repo-container');
+// Hardcoded username
+const GITHUB_USERNAME = 'jcrabapple';
 const profileName = document.getElementById('profile-name');
 const profileBio = document.getElementById('profile-bio');
 const repoCount = document.getElementById('repo-count');
@@ -50,45 +50,26 @@ const languageColors = {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if username is in local storage
-    const savedUsername = localStorage.getItem('github-username');
-    if (savedUsername) {
-        usernameInput.value = savedUsername;
-    }
-
     // Set up event listeners
-    loadButton.addEventListener('click', loadUserData);
-    usernameInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            loadUserData();
-        }
-    });
     searchInput.addEventListener('input', filterRepos);
     sortSelect.addEventListener('change', sortRepos);
+    
+    // Load data automatically
+    loadUserData();
 });
 
 // Load user and repository data
 async function loadUserData() {
-    const username = usernameInput.value.trim();
-    
-    if (!username) {
-        showError('Please enter a GitHub username');
-        return;
-    }
-    
-    // Save username to local storage
-    localStorage.setItem('github-username', username);
-    
     showLoading(true);
     hideError();
     
     try {
         // Fetch user profile data
-        const userData = await fetchUserData(username);
+        const userData = await fetchUserData(GITHUB_USERNAME);
         if (!userData) return;
         
         // Fetch repositories data
-        const reposData = await fetchRepositories(username);
+        const reposData = await fetchRepositories(GITHUB_USERNAME);
         if (!reposData) return;
         
         // Update UI with fetched data
@@ -96,12 +77,9 @@ async function loadUserData() {
         processRepositories(reposData);
         showLoading(false);
         
-        // Hide username section after successful load
-        usernameSection.classList.add('hidden');
-        
     } catch (error) {
         console.error('Error loading data:', error);
-        showError('Error loading data. Please try again.');
+        showError('Error loading GitHub data. Please refresh the page to try again.');
         showLoading(false);
     }
 }
@@ -453,25 +431,5 @@ function hideError() {
     errorMessage.classList.add('hidden');
 }
 
-// Auto-load repositories if username is in URL
-document.addEventListener('DOMContentLoaded', () => {
-    // Check for username in URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const usernameParam = urlParams.get('username');
-    
-    if (usernameParam) {
-        usernameInput.value = usernameParam;
-        loadUserData();
-    } else if (localStorage.getItem('github-username')) {
-        // If no username in URL but in local storage, auto-load
-        loadUserData();
-    }
-});
-
-// Add event listener for automatic loading on stored username
-window.addEventListener('load', () => {
-    // If there's a username input value (either from URL or local storage)
-    if (usernameInput.value) {
-        loadUserData();
-    }
-});
+// The data will now load automatically when the page loads
+// No need for URL parameters or local storage since the username is hardcoded
