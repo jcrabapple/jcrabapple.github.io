@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My GitHub Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Source+Code+Pro&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="profile-container">
+                <div class="profile-image">
+                    <!-- GitHub profile image will be inserted here via JavaScript -->
+                </div>
+                <div class="profile-info">
+                    <h1 id="profile-name">GitHub Portfolio</h1>
+                    <p id="profile-bio"></p>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <i class="fas fa-code-branch"></i>
+                            <span id="repo-count">0</span> Repositories
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-users"></i>
+                            <span id="follower-count">0</span> Followers
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-user-plus"></i>
+                            <span id="following-count">0</span> Following
+                        </div>
+                    </div>
+                    <div class="profile-links">
+                        <a id="github-link" href="#" target="_blank" aria-label="GitHub Profile">
+                            <i class="fab fa-github"></i> GitHub
+                        </a>
+                        <a id="email-link" href="#" class="hidden">
+                            <i class="fas fa-envelope"></i> <span id="email-text">Email</span>
+                        </a>
+                        <a id="blog-link" href="#" target="_blank" class="hidden">
+                            <i class="fas fa-globe"></i> Blog
+                        </a>
+                        <a id="twitter-link" href="#" target="_blank" class="hidden">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="username-section">
+            <div class="username-input">
+                <h2>Enter your GitHub username</h2>
+                <div class="input-group">
+                    <input type="text" id="username-input" placeholder="e.g., octocat" aria-label="GitHub username">
+                    <button id="load-button" aria-label="Load repositories">Load Repositories</button>
+                </div>
+                <p id="error-message" class="error hidden"></p>
+            </div>
+        </section>
+
+        <section class="filter-section">
+            <div class="search-filter">
+                <input type="text" id="search-input" placeholder="Search repositories..." aria-label="Search repositories">
+                <select id="sort-select" aria-label="Sort repositories">
+                    <option value="updated">Recently Updated</option>
+                    <option value="stars">Most Stars</option>
+                    <option value="name">Name (A-Z)</option>
+                    <option value="created">Newest</option>
+                </select>
+            </div>
+            <div class="language-filter">
+                <div id="language-tags"></div>
+            </div>
+        </section>
+
+        <section class="repos-section">
+            <h2>Repositories</h2>
+            <div class="repo-grid" id="repo-container">
+                <!-- Repository cards will be inserted here via JavaScript -->
+                <div class="loading-spinner hidden">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Created with <i class="fas fa-heart"></i> using GitHub API</p>
+            <p>Deployed on GitHub Pages</p>
+        </div>
+    </footer>
+
+    <!-- Template for repository cards -->
+    <template id="repo-template">
+        <article class="repo-card">
+            <div class="repo-header">
+                <h3 class="repo-name"></h3>
+                <p class="repo-description"></p>
+                <div class="repo-meta">
+                    <span class="repo-language">
+                        <span class="language-color"></span>
+                        <span class="language-name"></span>
+                    </span>
+                    <span class="repo-stars">
+                        <i class="fas fa-star"></i>
+                        <span class="stars-count"></span>
+                    </span>
+                    <span class="repo-forks">
+                        <i class="fas fa-code-branch"></i>
+                        <span class="forks-count"></span>
+                    </span>
+                    <span class="repo-last-updated">
+                        <i class="fas fa-history"></i>
+                        <span class="updated-date"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="repo-footer">
+                <div class="repo-topics"></div>
+                <div class="repo-links">
+                    <a href="#" class="repo-link" target="_blank">
+                        <i class="fab fa-github"></i> View Repo
+                    </a>
+                    <a href="#" class="homepage-link hidden" target="_blank">
+                        <i class="fas fa-external-link-alt"></i> Demo
+                    </a>
+                </div>
+            </div>
+        </article>
+    </template>
+
+    <script src="script.js"></script>
+</body>
+</html>
