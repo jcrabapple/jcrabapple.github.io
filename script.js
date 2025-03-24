@@ -66,14 +66,22 @@ async function loadUserData() {
     try {
         // Fetch user profile data
         const userData = await fetchUserData(GITHUB_USERNAME);
-        if (!userData) return;
+        if (!userData) {
+            showLoading(false);
+            return;
+        }
+        
+        // Update profile UI right away
+        updateProfileUI(userData);
         
         // Fetch repositories data
         const reposData = await fetchRepositories(GITHUB_USERNAME);
-        if (!reposData) return;
+        if (!reposData) {
+            showLoading(false);
+            return;
+        }
         
-        // Update UI with fetched data
-        updateProfileUI(userData);
+        // Process and display repositories
         processRepositories(reposData);
         showLoading(false);
         
