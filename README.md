@@ -1,16 +1,15 @@
-# GitHub Portfolio
+# jcrabapple's GitHub Portfolio
 
-A responsive and dynamic portfolio website that showcases your GitHub repositories using the GitHub API.
+A responsive and dynamic portfolio website that showcases my GitHub repositories using the GitHub API.
 
 ## Features
 
-- Dynamic fetching of GitHub profile information
-- Displays all your repositories with detailed information
+- Automatically loads my GitHub profile information and repositories
+- Displays all repositories with detailed information
 - Filter repositories by language or search term
 - Sort repositories by various criteria (recently updated, stars, name, creation date)
 - Responsive design for all devices
 - Dark theme support (matches system preferences)
-- Local storage for remembering your username
 
 ## How to Deploy on GitHub Pages
 
@@ -88,4 +87,4 @@ This project is available under the MIT License.
 
 ---
 
-Created by jcrabapple
+Created by [Your Name]
