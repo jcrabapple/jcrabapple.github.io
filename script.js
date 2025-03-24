@@ -50,29 +50,40 @@ const languageColors = {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, setting up event listeners');
+    
     // Set up event listeners
     searchInput.addEventListener('input', filterRepos);
     sortSelect.addEventListener('change', sortRepos);
+    
+    console.log('Starting to load GitHub data for user:', GITHUB_USERNAME);
     
     // Load data automatically
     loadUserData();
 });
 
 // Load user and repository data
-async function loadUserData() {
+async function loadUserData(retry = true) {
     showLoading(true);
     hideError();
     
     try {
+        console.log('Fetching GitHub user data for:', GITHUB_USERNAME);
+        
+        // Check GitHub API rate limit status first
+        const rateLimitStatus = await checkRateLimit();
+        if (!rateLimitStatus.ok) {
+            showError(`GitHub API ${rateLimitStatus.message}`);
+            showLoading(false);
+            return;
+        }
+        
         // Fetch user profile data
         const userData = await fetchUserData(GITHUB_USERNAME);
         if (!userData) {
             showLoading(false);
             return;
         }
-        
-        // Update profile UI right away
-        updateProfileUI(userData);
         
         // Fetch repositories data
         const reposData = await fetchRepositories(GITHUB_USERNAME);
@@ -81,14 +92,61 @@ async function loadUserData() {
             return;
         }
         
-        // Process and display repositories
+        console.log('Successfully loaded all GitHub data');
+        
+        // Update UI with fetched data
+        updateProfileUI(userData);
         processRepositories(reposData);
         showLoading(false);
         
     } catch (error) {
         console.error('Error loading data:', error);
+        
+        // If this is the first attempt, try again once
+        if (retry) {
+            console.log('First attempt failed, retrying once...');
+            setTimeout(() => loadUserData(false), 1000);
+            return;
+        }
+        
         showError('Error loading GitHub data. Please refresh the page to try again.');
         showLoading(false);
+    }
+}
+
+// Check GitHub API rate limit before making requests
+async function checkRateLimit() {
+    try {
+        const response = await fetch('https://api.github.com/rate_limit');
+        
+        if (!response.ok) {
+            return { 
+                ok: false, 
+                message: `rate limit check failed: ${response.status}` 
+            };
+        }
+        
+        const rateData = await response.json();
+        const coreLimit = rateData.resources.core;
+        
+        console.log('GitHub API Rate Limit:', {
+            remaining: coreLimit.remaining,
+            limit: coreLimit.limit,
+            resetTime: new Date(coreLimit.reset * 1000).toLocaleTimeString()
+        });
+        
+        if (coreLimit.remaining < 2) {
+            const resetTime = new Date(coreLimit.reset * 1000).toLocaleTimeString();
+            return { 
+                ok: false, 
+                message: `rate limit exceeded. Resets at ${resetTime}` 
+            };
+        }
+        
+        return { ok: true };
+    } catch (error) {
+        console.error('Rate limit check error:', error);
+        return { ok: true }; // Continue anyway even if rate check fails
     }
 }
 
@@ -108,7 +166,7 @@ async function fetchUserData(username) {
                 return null;
             }
             
-            showError('Error fetching user data');
+            showError(`Error fetching user data: ${response.status}`);
             return null;
         }
         
@@ -132,7 +190,7 @@ async function fetchRepositories(username) {
                 return null;
             }
             
-            showError('Error fetching repositories');
+            showError(`Error fetching repositories: ${response.status}`);
             return null;
         }
         
@@ -430,14 +488,28 @@ function showLoading(isLoading) {
 
 // Display error message
 function showError(message) {
+    console.error('Error displayed:', message);
     errorMessage.textContent = message;
     errorMessage.classList.remove('hidden');
 }
 
 // Hide error message
 function hideError() {
+    console.log('Hiding any error messages');
     errorMessage.classList.add('hidden');
+    errorMessage.textContent = '';
 }
 
 // The data will now load automatically when the page loads
 // No need for URL parameters or local storage since the username is hardcoded
+
+// Global error handler for unhandled exceptions
+window.addEventListener('error', function(event) {
+    console.error('Global error caught:', event.error);
+    // Only show the error message if it's not already showing some other error
+    if (errorMessage.classList.contains('hidden')) {
+        showError('An unexpected error occurred. Check the console for details.');
+    }
+    // Prevent the browser's default error handling
+    event.preventDefault();
+});
